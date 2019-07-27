@@ -18,13 +18,15 @@ The comments which is above the "write" variable explains the purpose,
 
 # Updates
 
+[2019-07-26]
+
 Two solutions are provided.
-(1) KVO solution is on objc_dynamic branch, and
-(2) Pure Swift solution is on PureSwift branch
+..* KVO solution is on objc_dynamic branch, and
+..* Pure Swift solution is on PureSwift branch
 
 Personally I would recommend PureSwift over KVO. Reasons are
-(1) KVO solution actually uses Objective-C features. For an observable object we must apply "@objc dynamic" and it must inherit NSObject class. KVO solution has a limitation that it only works for objects inherited from NSObject.
-(2) Mixing Objective-C flavor into Swift is not tasty only unless we have no choice.
+..* KVO solution actually uses Objective-C features. For an observable object we must apply "@objc dynamic" and it must inherit NSObject class. KVO solution has a limitation that it only works for objects inherited from NSObject.
+..* Mixing Objective-C flavor into Swift is not tasty only unless we have no choice.
 
 # Demo
 ![](https://github.com/zjkuang/MVVMDataBindingExampleSwift/blob/master/MVVMDataBindingSwift.gif)
