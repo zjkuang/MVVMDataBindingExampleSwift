@@ -9,7 +9,6 @@
 import UIKit
 
 class ViewController: UIViewController {
-
     @IBOutlet weak var redSlider: UISlider!
     @IBOutlet weak var redTextField: UITextField!
     @IBOutlet weak var greenSlider: UISlider!
@@ -21,9 +20,11 @@ class ViewController: UIViewController {
     
     var firstResponder: AnyObject?
     
-    var redValueObservation: NSKeyValueObservation?
-    var greenValueObservation: NSKeyValueObservation?
-    var blueValueObservation: NSKeyValueObservation?
+    var rgbColor: JKCSRGBColor?
+    
+    var redValueObserver: JKCSObserver<Int>?
+    var greenValueObserver: JKCSObserver<Int>?
+    var blueValueObserver: JKCSObserver<Int>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,59 +32,50 @@ class ViewController: UIViewController {
         
         setKeypadPreferences()
         
-        setKVO()
-        
-        ColorMixture.shared.writer = self
-        ColorMixture.shared.red = 0
-        ColorMixture.shared.green = 0
-        ColorMixture.shared.blue = 0
+        rgbColor = JKCSRGBColor()
+        setObservers()
+        rgbColor?.red.writer = self
+        rgbColor?.red.value = 0
+        rgbColor?.green.writer = self
+        rgbColor?.green.value = 0
+        rgbColor?.blue.writer = self
+        rgbColor?.blue.value = 0
     }
     
-    private func setKVO() {
-        redValueObservation = ColorMixture.shared.observe(
-            \ColorMixture.red,
-            options: [.old, .new],
-            changeHandler: { [weak self] object, change in
-                if object != self?.redSlider {
-                    self?.redSlider.value = Float(change.newValue ?? 0) / 255.0
-                }
-                if object != self?.redTextField {
-                    self?.redTextField.text = "\(change.newValue ?? 0)"
-                }
-                self?.mixColor()
-        })
-        
-        greenValueObservation = ColorMixture.shared.observe(
-            \ColorMixture.green,
-            options: [.old, .new],
-            changeHandler: { [weak self] object, change in
-                if object != self?.greenSlider {
-                    self?.greenSlider.value = Float(change.newValue ?? 0) / 255.0
-                }
-                if object != self?.greenTextField {
-                    self?.greenTextField.text = "\(change.newValue ?? 0)"
-                }
-                self?.mixColor()
-        })
-        
-        blueValueObservation = ColorMixture.shared.observe(
-            \ColorMixture.blue,
-            options: [.old, .new],
-            changeHandler: { [weak self] object, change in
-                if object != self?.blueSlider {
-                    self?.blueSlider.value = Float(change.newValue ?? 0) / 255.0
-                }
-                if object != self?.blueTextField {
-                    self?.blueTextField.text = "\(change.newValue ?? 0)"
-                }
-                self?.mixColor()
-        })
+    private func setObservers() {
+        redValueObserver = JKCSObserver<Int>(observable: rgbColor!.red, valueDidChange: { [weak self] (oldValue, newValue) in
+            if (!(self?.redSlider === self?.rgbColor?.red.writer)) {
+                self?.redSlider.value = Float(newValue) / 255.0
+            }
+            if (!(self?.redTextField === self?.rgbColor?.red.writer)) {
+                self?.redTextField.text = "\(newValue)"
+            }
+            self?.blendColor()
+        }).start()
+        greenValueObserver = JKCSObserver<Int>(observable: rgbColor!.green, valueDidChange: { [weak self] (oldValue, newValue) in
+            if (!(self?.greenSlider === self?.rgbColor?.green.writer)) {
+                self?.greenSlider.value = Float(newValue) / 255.0
+            }
+            if (!(self?.greenTextField === self?.rgbColor?.green.writer)) {
+                self?.greenTextField.text = "\(newValue)"
+            }
+            self?.blendColor()
+        }).start()
+        blueValueObserver = JKCSObserver<Int>(observable: rgbColor!.blue, valueDidChange: { [weak self] (oldValue, newValue) in
+            if (!(self?.blueSlider === self?.rgbColor?.blue.writer)) {
+                self?.blueSlider.value = Float(newValue) / 255.0
+            }
+            if (!(self?.blueTextField === self?.rgbColor?.blue.writer)) {
+                self?.blueTextField.text = "\(newValue)"
+            }
+            self?.blendColor()
+        }).start()
     }
     
-    private func mixColor() {
-        let colorCode = String(format: "%02X%02X%02X", ColorMixture.shared.red, ColorMixture.shared.green, ColorMixture.shared.blue)
-        let color = UIColor(red: CGFloat(ColorMixture.shared.red) / 255.0, green: CGFloat(ColorMixture.shared.green) / 255.0, blue: CGFloat(ColorMixture.shared.blue) / 255.0, alpha: 1.0)
-        let complementaryColor = UIColor(red: CGFloat(255 - ColorMixture.shared.red) / 255.0, green: CGFloat(255 - ColorMixture.shared.green) / 255.0, blue: CGFloat(255 - ColorMixture.shared.blue) / 255.0, alpha: 1.0)
+    private func blendColor() {
+        let colorCode = String(format: "%02X%02X%02X", rgbColor!.red.value, rgbColor!.green.value, rgbColor!.blue.value)
+        let color = UIColor(red: CGFloat(rgbColor!.red.value) / 255.0, green: CGFloat(rgbColor!.green.value) / 255.0, blue: CGFloat(rgbColor!.blue.value) / 255.0, alpha: 1.0)
+        let complementaryColor = UIColor(red: CGFloat(255 - rgbColor!.red.value) / 255.0, green: CGFloat(255 - rgbColor!.green.value) / 255.0, blue: CGFloat(255 - rgbColor!.blue.value) / 255.0, alpha: 1.0)
         colorCodeLable.text = colorCode
         colorCodeLable.textColor = color
         colorCodeLable.backgroundColor = complementaryColor
@@ -91,18 +83,18 @@ class ViewController: UIViewController {
     }
     
     @IBAction func redSliderValueDidChange(_ sender: Any) {
-        ColorMixture.shared.writer = redSlider
-        ColorMixture.shared.red = Int(redSlider.value * 255.0)
+        rgbColor?.red.writer = redSlider
+        rgbColor?.red.value = Int(redSlider.value * 255.0)
     }
     
     @IBAction func greenSliderValueDidChange(_ sender: Any) {
-        ColorMixture.shared.writer = greenSlider
-        ColorMixture.shared.green = Int(greenSlider.value * 255.0)
+        rgbColor?.green.writer = greenSlider
+        rgbColor?.green.value = Int(greenSlider.value * 255.0)
     }
     
     @IBAction func blueSliderValueDidChange(_ sender: Any) {
-        ColorMixture.shared.writer = blueSlider
-        ColorMixture.shared.blue = Int(blueSlider.value * 255.0)
+        rgbColor?.blue.writer = blueSlider
+        rgbColor?.blue.value = Int(blueSlider.value * 255.0)
     }
     
     private func setKeypadPreferences() {
@@ -120,30 +112,29 @@ class ViewController: UIViewController {
             firstResponder = nil
         }
     }
-    
 }
 
 extension ViewController : UITextFieldDelegate {
-    
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         firstResponder = textField
         return true
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        let value = (Int(textField.text ?? "") ?? 0) % 255
+        let value = (Int(textField.text ?? "") ?? 0) % 256
         textField.text = "\(value)"
-        ColorMixture.shared.writer = textField
         if textField == redTextField {
-            ColorMixture.shared.red = value
+            rgbColor?.red.writer = textField
+            rgbColor?.red.value = value
         }
         if textField == greenTextField {
-            ColorMixture.shared.green = value
+            rgbColor?.green.writer = textField
+            rgbColor?.green.value = value
         }
         if textField == blueTextField {
-            ColorMixture.shared.blue = value
+            rgbColor?.blue.writer = textField
+            rgbColor?.blue.value = value
         }
     }
-    
 }
 
