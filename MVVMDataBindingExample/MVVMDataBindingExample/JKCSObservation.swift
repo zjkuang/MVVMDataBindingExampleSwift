@@ -10,7 +10,7 @@ import Foundation
 
 // == Observable ==
 
-protocol JKCSProtocolObservable {
+protocol JKCSObservableProtocol {
     associatedtype T
     
     var value: T {get set}
@@ -18,7 +18,7 @@ protocol JKCSProtocolObservable {
     var observers: Array<JKCSObserver<T>> {get set}
 }
 
-extension JKCSProtocolObservable {
+extension JKCSObservableProtocol {
     mutating func addObserver(observer: JKCSObserver<T>) {
         for existed in observers {
             if existed === observer {
@@ -43,7 +43,7 @@ extension JKCSProtocolObservable {
     }
 }
 
-class JKCSObservable<T>: JKCSProtocolObservable {
+class JKCSObservable<T>: JKCSObservableProtocol {
     var value: T {
         didSet {
             valueDidChange(oldValue: oldValue, newValue: value)
@@ -59,13 +59,13 @@ class JKCSObservable<T>: JKCSProtocolObservable {
 
 // == Observer ==
 
-protocol JKCSProtocolObserver {
+protocol JKCSObserverProtocol {
     associatedtype T
     
     func valueDidChange(oldValue: T, newValue: T)
 }
 
-class JKCSObserver<T>: JKCSProtocolObserver {
+class JKCSObserver<T>: JKCSObserverProtocol {
     private var observable: JKCSObservable<T>
     private let valueDidChange: (_ oldValue: T, _ newValue: T) -> ()
     
