@@ -34,45 +34,43 @@ class ViewController: UIViewController {
         
         rgbColor = JKCSRGBColor()
         setObservers()
-        rgbColor?.red.writer = self
-        rgbColor?.red.value = 0
-        rgbColor?.green.writer = self
-        rgbColor?.green.value = 0
-        rgbColor?.blue.writer = self
-        rgbColor?.blue.value = 0
+        updateView()
     }
     
     private func setObservers() {
         redValueObserver = JKCSObserver<Int>(observable: rgbColor!.red, valueDidChange: { [weak self] (oldValue, newValue) in
-            if (!(self?.redSlider === self?.rgbColor?.red.writer)) {
-                self?.redSlider.value = Float(newValue) / 255.0
-            }
-            if (!(self?.redTextField === self?.rgbColor?.red.writer)) {
-                self?.redTextField.text = "\(newValue)"
-            }
-            self?.blendColor()
+            self?.updateView()
         }).start()
+        
         greenValueObserver = JKCSObserver<Int>(observable: rgbColor!.green, valueDidChange: { [weak self] (oldValue, newValue) in
-            if (!(self?.greenSlider === self?.rgbColor?.green.writer)) {
-                self?.greenSlider.value = Float(newValue) / 255.0
-            }
-            if (!(self?.greenTextField === self?.rgbColor?.green.writer)) {
-                self?.greenTextField.text = "\(newValue)"
-            }
-            self?.blendColor()
+            self?.updateView()
         }).start()
+        
         blueValueObserver = JKCSObserver<Int>(observable: rgbColor!.blue, valueDidChange: { [weak self] (oldValue, newValue) in
-            if (!(self?.blueSlider === self?.rgbColor?.blue.writer)) {
-                self?.blueSlider.value = Float(newValue) / 255.0
-            }
-            if (!(self?.blueTextField === self?.rgbColor?.blue.writer)) {
-                self?.blueTextField.text = "\(newValue)"
-            }
-            self?.blendColor()
+            self?.updateView()
         }).start()
     }
     
-    private func blendColor() {
+    private func updateView() {
+        if (!(self.redSlider === self.rgbColor?.red.writer)) {
+            self.redSlider.value = Float(self.rgbColor?.red.value ?? 0) / 255.0
+        }
+        if (!(self.redTextField === self.rgbColor?.red.writer)) {
+            self.redTextField.text = "\(self.rgbColor?.red.value ?? 0)"
+        }
+        if (!(self.greenSlider === self.rgbColor?.green.writer)) {
+            self.greenSlider.value = Float(self.rgbColor?.green.value ?? 0) / 255.0
+        }
+        if (!(self.greenTextField === self.rgbColor?.green.writer)) {
+            self.greenTextField.text = "\(self.rgbColor?.green.value ?? 0)"
+        }
+        if (!(self.blueSlider === self.rgbColor?.blue.writer)) {
+            self.blueSlider.value = Float(self.rgbColor?.blue.value ?? 0) / 255.0
+        }
+        if (!(self.blueTextField === self.rgbColor?.blue.writer)) {
+            self.blueTextField.text = "\(self.rgbColor?.blue.value ?? 0)"
+        }
+        
         let colorCode = String(format: "%02X%02X%02X", rgbColor!.red.value, rgbColor!.green.value, rgbColor!.blue.value)
         let color = UIColor(red: CGFloat(rgbColor!.red.value) / 255.0, green: CGFloat(rgbColor!.green.value) / 255.0, blue: CGFloat(rgbColor!.blue.value) / 255.0, alpha: 1.0)
         let complementaryColor = UIColor(red: CGFloat(255 - rgbColor!.red.value) / 255.0, green: CGFloat(255 - rgbColor!.green.value) / 255.0, blue: CGFloat(255 - rgbColor!.blue.value) / 255.0, alpha: 1.0)

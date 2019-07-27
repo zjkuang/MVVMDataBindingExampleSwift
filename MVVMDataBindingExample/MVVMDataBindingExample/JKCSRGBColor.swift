@@ -9,7 +9,7 @@
 import Foundation
 
 struct JKCSRGBColor {
-    var red = JKCSObservable<Int>(value: 0)
-    var green = JKCSObservable<Int>(value: 0)
-    var blue = JKCSObservable<Int>(value: 0)
+    var red = JKCSObservable<Int>(value: 0, autoSaveKey: "4AD47D3C")
+    var green = JKCSObservable<Int>(value: 0, autoSaveKey: "F5DAAFD8")
+    var blue = JKCSObservable<Int>(value: 0, autoSaveKey: "56DC0E01")
 }

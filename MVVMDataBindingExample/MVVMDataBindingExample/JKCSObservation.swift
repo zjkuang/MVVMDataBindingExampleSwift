@@ -46,14 +46,31 @@ extension JKCSObservableProtocol {
 class JKCSObservable<T>: JKCSObservableProtocol {
     var value: T {
         didSet {
+            if autoSave {
+                UserDefaults.standard.set(value, forKey: autoSaveKey)
+            }
             valueDidChange(oldValue: oldValue, newValue: value)
         }
     }
     var writer: AnyObject? = nil
     var observers: Array<JKCSObserver<T>> = []
     
-    init(value: T) {
+    // auto save, optional
+    private var autoSave = false
+    private let autoSaveKey: String
+    
+    init(value: T, autoSaveKey: String = "", resume: Bool = true) {
         self.value = value
+        self.autoSaveKey = autoSaveKey
+        if autoSaveKey != "" {
+            autoSave = true
+            if resume {
+                if let resumeValue = UserDefaults.standard.value(forKey: autoSaveKey) {
+                    self.value = resumeValue as! T
+                    print("resumeValue: \(resumeValue)")
+                }
+            }
+        }
     }
 }
 
