@@ -94,22 +94,6 @@ class ViewController: UIViewController {
         rgbColor?.blue.writer = blueSlider
         rgbColor?.blue.value = Int(blueSlider.value * 255.0)
     }
-    
-    private func setKeypadPreferences() {
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        toolbar.items = [UIBarButtonItem(title: "Apply", style: .done, target: self, action: #selector(keypadApplyButtonTapped))]
-        redTextField.inputAccessoryView = toolbar
-        greenTextField.inputAccessoryView = toolbar
-        blueTextField.inputAccessoryView = toolbar
-    }
-    
-    @IBAction private func keypadApplyButtonTapped() {
-        if let textField = (firstResponder as? UITextField) {
-            textField.resignFirstResponder()
-            firstResponder = nil
-        }
-    }
 }
 
 extension ViewController : UITextFieldDelegate {
@@ -132,6 +116,24 @@ extension ViewController : UITextFieldDelegate {
         if textField == blueTextField {
             rgbColor?.blue.writer = textField
             rgbColor?.blue.value = value
+        }
+    }
+}
+
+extension ViewController {
+    private func setKeypadPreferences() {
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        toolbar.items = [UIBarButtonItem(title: "Apply", style: .done, target: self, action: #selector(keypadApplyButtonTapped))]
+        redTextField.inputAccessoryView = toolbar
+        greenTextField.inputAccessoryView = toolbar
+        blueTextField.inputAccessoryView = toolbar
+    }
+    
+    @IBAction private func keypadApplyButtonTapped() {
+        if let textField = (firstResponder as? UITextField) {
+            textField.resignFirstResponder()
+            firstResponder = nil
         }
     }
 }
