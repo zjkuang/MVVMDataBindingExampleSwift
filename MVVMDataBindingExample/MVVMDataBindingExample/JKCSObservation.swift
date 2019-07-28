@@ -67,7 +67,6 @@ class JKCSObservable<T>: JKCSObservableProtocol {
             if resume {
                 if let resumeValue = UserDefaults.standard.value(forKey: autoSaveKey) {
                     self.value = resumeValue as! T
-                    print("resumeValue: \(resumeValue)")
                 }
             }
         }
