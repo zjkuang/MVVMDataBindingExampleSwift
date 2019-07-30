@@ -16,5 +16,7 @@ An alternative solution, KVO manner, is also available on brancch "objc_dynamic"
 (1) KVO solution actually uses Objective-C features. For an observable object, we must apply "@objc dynamic" and it MUST BE A SUBCLASS OF NSObject, a big and unpleasant limitation.
 (2) Most importantly, mixing Objective-C flavor into Swift is not tasty only unless we have to.
 
+[(The Android/Kotlin solution is also available)](https://github.com/zjkuang/MVVMDataBindingExampleKotlin)
+
 # Demo
 ![](https://github.com/zjkuang/MVVMDataBindingExampleSwift/blob/master/MVVMDataBindingSwift.gif)
