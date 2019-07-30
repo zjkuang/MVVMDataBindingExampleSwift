@@ -56,6 +56,7 @@ class JKCSObservable<T>: JKCSObservableProtocol {
     var observers: Array<JKCSObserver<T>> = []
     
     // auto save, optional
+    // BONUS FEATURE: autoSave - "autoSave"/"autoSaveKey" is a pair of members offering a "bonus" feature, autoSave, which is usefule but has nothing to do with observation itself. When initialized with a non-empty key string, the new value changed will be automatically saved into UserDefaults.standard to the key string. And each time the app restarts, the saved value will be automatically retrieved from UserDefaults.standard. This can be very helpful for those values serve as user preferrences. To see the effect, run the example and adjust the RGB color to some non-zero value and then kill the app. When you restart the app, the color you set before will be resumed, which is the magic of "autoSave".
     private var autoSave = false
     private let autoSaveKey: String
     

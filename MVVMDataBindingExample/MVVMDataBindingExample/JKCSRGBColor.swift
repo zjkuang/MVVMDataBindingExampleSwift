@@ -9,6 +9,7 @@
 import Foundation
 
 struct JKCSRGBColor {
+    // Quick guide - (1) to make a variable observable, wrap it with a JKCSObservable instance
     var red = JKCSObservable<Int>(value: 0, autoSaveKey: "4AD47D3C")
     var green = JKCSObservable<Int>(value: 0, autoSaveKey: "F5DAAFD8")
     var blue = JKCSObservable<Int>(value: 0, autoSaveKey: "56DC0E01")

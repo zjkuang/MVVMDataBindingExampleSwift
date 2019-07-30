@@ -22,6 +22,7 @@ class ViewController: UIViewController {
     
     var rgbColor: JKCSRGBColor?
     
+    // Quick guide - (2) declare an observer for each observable
     var redValueObserver: JKCSObserver<Int>?
     var greenValueObserver: JKCSObserver<Int>?
     var blueValueObserver: JKCSObserver<Int>?
@@ -38,9 +39,10 @@ class ViewController: UIViewController {
     }
     
     private func setObservers() {
+        // Quick guide - (3) instantiate the observer by specifying (a) which observable it is observing, and (b) your processing closure on event valueDidChange
         redValueObserver = JKCSObserver<Int>(observable: rgbColor!.red, valueDidChange: { [weak self] (oldValue, newValue) in
             self?.updateView()
-        }).start()
+        }).start() // Quick guide - (4) and don't forget to kick off the observation by calling start()
         
         greenValueObserver = JKCSObserver<Int>(observable: rgbColor!.green, valueDidChange: { [weak self] (oldValue, newValue) in
             self?.updateView()
@@ -52,6 +54,12 @@ class ViewController: UIViewController {
     }
     
     private func updateView() {
+        //
+        // IMPORTANT!!! - About the observer's 'writer' property
+        // The UI elment who modified the observable's value shall not be re-updated, otherwise there will occur an infinite loop. Consider this senario,
+        // (i) User slides the redSlider, (ii) redSliderValueDidChange() updates rgbColor.red.value, (iii) redValueObserver's observation closure gets triggered, (iv) redSlider's value is updated again, which falls into an infinite loop of (ii)-(iii)-(iv)-(ii)-(iii)-(iv)...
+        // That's why the observable has a property "writer". Before redSlider update rgbColor.red.value, it shall set the writer to be itself, so that in (iii), redSlider can check the writer, if it was itself, its value will not be updated, by which means the infinite loop is avoided.
+        //
         if (!(self.redSlider === self.rgbColor?.red.writer)) {
             self.redSlider.value = Float(self.rgbColor?.red.value ?? 0) / 255.0
         }
@@ -81,6 +89,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func redSliderValueDidChange(_ sender: Any) {
+        // Quick guide - (5) update the value property of the wrapped observable (and then all the observers observing this value will be triggered)
         rgbColor?.red.writer = redSlider
         rgbColor?.red.value = Int(redSlider.value * 255.0)
     }
