@@ -1,2 +1,2 @@
-MVVMDataBindingExample/MVVMDataBindingExample/using_git-crypt.txt filter=git-crypt diff=git-crypt
+MVVMDataBindingExample/MVVMDataBindingExample/TestGitCrypt/** filter=git-crypt diff=git-crypt
 
